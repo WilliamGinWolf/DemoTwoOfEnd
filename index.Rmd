@@ -1,0 +1,163 @@
+---
+title       : Demo2
+subtitle    : Using GoogleVis Package for data visualization
+author      : William
+job         : Exchange Student
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : solarized_light      # 
+widgets     : [quiz,bootstrap,shiny,interactive]            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+--- .class #id 
+
+## Code of Chart 1
+
+> 1. original<-read.csv("20150108.csv")
+> 2. suppressPackageStartupMessages(library(googleVis))
+> 3. by1<-aggregate(original$人數,by=list(original$車次,original$下車站),sum)
+> 4. names(by1)<-c("Train","Station","Man")
+> 5. columnOfTrainAndStation<-gvisColumnChart(by1)
+> 6. plot(columnOfTrainAndStation)
+
+```{r echo = FALSE}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by1<-aggregate(original$人數,by=list(original$車次,original$下車站),sum)
+names(by1)<-c("Train","Station","Man")
+require(googleVis)
+columnOfTrainAndStation<-gvisColumnChart(by1,options=list(width=1000, height=200))
+plot(columnOfTrainAndStation)
+```
+
+
+--- .class #id
+
+## Column Chart of Station & Train
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by1<-aggregate(original$人數,by=list(original$車次,original$下車站),sum)
+names(by1)<-c("Train","Station","Man")
+require(googleVis)
+columnOfTrainAndStation<-gvisColumnChart(by1,options=list(width=1000, height=400))
+plot(columnOfTrainAndStation,tag = 'chart')
+```
+
+--- .class #id
+
+## Column Chart of Boarding On Station Only
+
+Boarding On Station V.S Boarding Off Station
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by2<-aggregate(original$人數,by=list(original$上車站),sum)
+by3<-aggregate(original$人數,by=list(original$下車站),sum)
+names(by2)<-c("Station","Man")
+names(by3)<-c("Station","Man")
+require(googleVis)
+columnOfStationOnly1<-gvisColumnChart(by2,options=list(width=1000, height=200))
+columnOfStationOnly2<-gvisColumnChart(by3,options=list(width=1000, height=200))
+plot(columnOfStationOnly1,tag = 'chart')
+plot(columnOfStationOnly2,tag = 'chart')
+```
+
+--- .class #id
+
+## Column Chart of Trains Only
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by4<-aggregate(original$人數,by=list(original$車次),sum)
+names(by4)<-c("Train","Man")
+require(googleVis)
+columnOfTrainOnly<-gvisBarChart(by4,options=list(width=1000, height=600))
+plot(columnOfTrainOnly,tag = 'chart')
+```
+
+--- .class #id
+
+## Order the Chart of Trains!
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by4<-aggregate(original$人數,by=list(original$車次),sum)
+names(by4)<-c("Train","Man")
+require(googleVis)
+by4<-by4[c(which(by4$Man>250)),]
+by4<-by4[order(-by4[,2]),]
+columnOfTrainOnly<-gvisBarChart(by4,options=list(width=1000, height=600))
+plot(columnOfTrainOnly,tag = 'chart')
+```
+
+--- .class #id
+
+## Time! -Annotated Time Line!
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by5<-aggregate(original$人數,by=list(original$上車站,original$到站時間),sum)
+names(by5)<-c("Station","Time","Man")
+by5$Time<-strptime(by5$Time, format = "%Y%m%d %R")
+require(googleVis)
+columnOfTime<-gvisAnnotatedTimeLine(by5,datevar = "Time",numvar = "Man",idvar = "Station",options=list(width=1000, height=400))
+plot(columnOfTime,tag =  'chart')
+```
+
+--- .class #id
+
+## Time! -Annotated Time Chart
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+by5<-aggregate(original$人數,by=list(original$上車站,original$到站時間),sum)
+names(by5)<-c("Station","Time","Man")
+by5$Time<-strptime(by5$Time, format = "%Y%m%d %R")
+require(googleVis)
+columnOfTime<-gvisAnnotationChart(by5,datevar = "Time",numvar = "Man",idvar = "Station",options=list(width=1000, height=400,displayExactValues = FALSE))
+plot(columnOfTime,tag =  'chart')
+```
+
+--- .class #id
+
+## Look! -Visitor Flow Based On Station
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+original$到站時間<-strptime(original$到站時間, format = "%Y%m%d %R")
+original$到站時間<-format(original$到站時間,'%Y-%m-%d %H')
+original$到站時間<-as.factor(original$到站時間)
+by6<-aggregate(original$人數,by=list(original$上車站,original$到站時間),sum)
+names(by6)<-c("Station","Time","Man")
+by6$Time<-strptime(by6$Time, format = "%Y-%m-%d %H")
+require(googleVis)
+columnOfTime<-gvisAnnotationChart(by6,datevar = "Time",numvar = "Man",idvar = "Station",options=list(width=1000, height=400,displayExactValues = TRUE))
+plot(columnOfTime,tag =  'chart')
+```
+
+--- .class #id 
+
+## Visitor Flow Based On Train
+
+```{r echo = FALSE,results = "asis"}
+original<-read.csv("20150108.csv")
+suppressPackageStartupMessages(library(googleVis))
+original$到站時間<-strptime(original$到站時間, format = "%Y%m%d %R")
+original$到站時間<-format(original$到站時間,'%Y-%m-%d %H')
+original$到站時間<-as.factor(original$到站時間)
+by7<-aggregate(original$人數,by=list(original$車次,original$到站時間),sum)
+names(by7)<-c("Train","Time","Man")
+by7$Time<-strptime(by7$Time, format = "%Y-%m-%d %H")
+require(googleVis)
+columnOfTime<-gvisAnnotationChart(by7,datevar = "Time",numvar = "Man",idvar = "Train",options=list(width=1000, height=400,displayExactValues = TRUE))
+plot(columnOfTime,tag =  'chart')
+```
